@@ -76,6 +76,7 @@ sns.heatmap(cm, annot=True)
 plt.show()
 
 
-# import joblib
-# joblib.dump(model,'spam_model.pkl')
-# joblib.dump(tfidf,'vectorizer.pkl')
+model_saved = 'spam_mail_model.pkl'
+with open(model_saved,'wb') as file:
+    pickle.dump(model,file)
+print("Model Saved Successfully.")
