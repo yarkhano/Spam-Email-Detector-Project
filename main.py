@@ -7,7 +7,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, confusion_matrix
 
-# --- 1. DATA LOADING & CLEANING ---
+# DATA LOADING & CLEANING
 dataset = pd.read_csv('spam_mails_dataset.csv')
 
 # Drop unnecessary columns
@@ -69,6 +69,7 @@ print(f"Model saved as {model_filename}")
 
 # Save the 'Translator' (TF-IDF Vectorizer)
 # IMPORTANT: You cannot use the model later without this specific translator
+
 vectorizer_filename = 'spam_vectorizer.pkl'
 with open(vectorizer_filename, 'wb') as file:
     pickle.dump(tfidf, file)
@@ -83,3 +84,13 @@ with open(model_filename, 'rb') as file:
 with open(vectorizer_filename, 'rb') as file:
     loaded_vectorizer = pickle.load(file)
     print(f"vectorizer loaded as {vectorizer_filename}")
+
+
+#verifying the loaded model is working correctly.
+sample_message = "Congratulations Yar you won a lottery of worth $500"
+transformed_message = loaded_vectorizer.transform([sample_message])
+predict = loaded_model.predict(transformed_message)
+if predict == 1:
+    print("This email is spam.")
+elif predict == 0:
+    print("This email is safe.")
