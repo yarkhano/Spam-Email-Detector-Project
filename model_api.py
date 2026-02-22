@@ -11,3 +11,18 @@ app = FastAPI(
     description="Created an api for spam detection project",
     version = "1.0.0"
 )
+
+
+#load the model and vectorizer
+try:
+    with open("spam_mail_model.pkl","rb") as file:
+        model = pickle.load(file)
+
+    with open("spam_vectorizer.pkl","rb") as file:
+        vectorizer = pickle.load(file)
+        print("Model and vectrizer loaded successfully")
+
+except FileNotFoundError as e:
+    print(f"error in loading model is :{e}")
+
+
