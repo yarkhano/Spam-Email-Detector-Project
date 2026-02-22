@@ -87,18 +87,13 @@ with open(vectorizer_filename, 'rb') as file:
 
 
 #verifying the loaded model is working correctly.
-# sample_message = "Information regarding submission of form"
-# transformed_message = loaded_vectorizer.transform([sample_message])
-# predicted_result = loaded_model.predict(transformed_message)
-# if predicted_result == 1:
-#     print("This email is spam.")
-# elif predicted_result == 0:
-#     print("This email is safe.")
-# print(f"message: {sample_message}")
-# print(f"prediction: {predicted_result}")
+sample_message = "Information regarding submission of form"
+transformed_message = loaded_vectorizer.transform([sample_message])
+predicted_result = loaded_model.predict(transformed_message)
+if predicted_result == 1:
+    print("This email is spam.")
+elif predicted_result == 0:
+    print("This email is safe.")
+print(f"message: {sample_message}")
+print(f"prediction: {predicted_result}")
 
-# Try these one by one to see which word the AI hates
-print(predict_email("Information"))
-print(predict_email("submission"))
-print(predict_email("form"))
-print(predict_email("Hello friend, how are you?"))
