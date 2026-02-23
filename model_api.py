@@ -28,3 +28,8 @@ except FileNotFoundError as e:
     print(f"error in loading model is :{e}")
 
 
+#Building API for Model
+
+#Creating class, to make sure the input is as expected(string).
+class input_message(BaseModel):
+    message: str
