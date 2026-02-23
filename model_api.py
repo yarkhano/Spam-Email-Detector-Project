@@ -33,3 +33,7 @@ except FileNotFoundError as e:
 #Creating class, to make sure the input is as expected(string).
 class input_message(BaseModel):
     message: str
+
+##Creating class, to make sure the output is as expected(string).
+class output_message(BaseModel):
+    message: str
