@@ -1,40 +1,41 @@
-#import required libraries
+# import required libraries
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-import pandas as pd
-import numpy as np
 import pickle
-from typing import List
-
+import uvicorn
 
 app = FastAPI(
-    title= "This is a Spam email detector APi",
+    title="This is a Spam email detector API",
     description="Created an api for spam detection project",
-    version = "1.0.0"
+    version="1.0.0"
 )
 
+# Initialize variables as None so they can be accessed globally
+model = None
+vectorizer = None
 
-#load the model and vectorizer
+# load the model and vectorizer
 try:
-    with open("spam_mail_model.pkl","rb") as file:
+    with open("spam_mail_model.pkl", "rb") as file:
         model = pickle.load(file)
 
-    with open("spam_vectorizer.pkl","rb") as file:
+    with open("spam_vectorizer.pkl", "rb") as file:
         vectorizer = pickle.load(file)
-        print("Model and vectrizer loaded successfully")
+        print("Model and vectorizer loaded successfully")
 
 except FileNotFoundError as e:
     print(f"error in loading model is :{e}")
 
 
-#Building API for Model
+# Building API for Model
 
-#Creating class, to make sure the input is as expected(string).
+# Creating class, to make sure the input is as expected(string).
 class input_message(BaseModel):
     message: str
 
-##Creating class, to make sure the output is as expected(string).
+
+# Creating class, to make sure the output is as expected(string).
 class output_message(BaseModel):
     message: str
 
@@ -74,7 +75,7 @@ async def root():
                 padding: 2rem;
                 background: var(--card-bg);
                 border-radius: 16px;
-                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
                 max-width: 500px;
                 width: 90%;
             }
@@ -127,18 +128,9 @@ async def root():
                 color: white;
             }
 
-            .btn-primary:hover {
-                background-color: var(--primary-hover);
-                transform: translateY(-1px);
-            }
-
             .btn-secondary {
                 background-color: #f3f4f6;
                 color: var(--text-main);
-            }
-
-            .btn-secondary:hover {
-                background-color: #e5e7eb;
             }
 
             footer {
@@ -169,4 +161,23 @@ async def root():
     """
 
 
+# This request will accept the input message from the user
+@app.post("/predict", response_model=output_message)
+async def predict_spam(input_data: input_message):
 
+
+    raw_text = input_data.message   # .message came from above pydantic validation
+
+
+    vectorized_text = vectorizer.transform([raw_text])
+    prediction = model.predict(vectorized_text)
+
+
+    label = "Spam" if prediction[0] == 1 else "Safe"
+
+    return {"message": label}
+
+
+# Running the app - Moved to the far left to fix IndentationError
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
