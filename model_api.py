@@ -164,7 +164,8 @@ async def root():
 # This request will accept the input message from the user
 @app.post("/predict", response_model=output_message)
 async def predict_spam(input_data: input_message):
-
+    if model is None or vectorizer is None:
+        raise HTTPException(status_code=500, detail="The 'Brain' or 'Translator' files are missing!")
 
     raw_text = input_data.message   # .message came from above pydantic validation
 
