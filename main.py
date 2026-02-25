@@ -6,6 +6,14 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import f1_score
+
+
+
 
 # DATA LOADING & CLEANING
 dataset = pd.read_csv('spam_mails_dataset.csv')
