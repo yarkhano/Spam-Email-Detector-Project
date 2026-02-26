@@ -19,7 +19,7 @@ from sklearn.metrics import f1_score
 
 
 
-# DATA LOADING & CLEANING
+# DATA LOADING & CLEANING , Data Preprocessing
 dataset = pd.read_csv('spam_mails_dataset.csv')
 
 # Drop unnecessary columns
@@ -31,6 +31,9 @@ new_dataset.rename(columns={"label": "category", "text": "message"}, inplace=Tru
 # Map text labels to numbers (0 for ham, 1 for spam)
 new_dataset["category"] = new_dataset["category"].map({"ham": 0, "spam": 1})
 
+
+#removing the irrelevant words symbols , that do not effect predictions of model
+new_dataset["message"] = new_dataset["message"].str.replace(r"^Subject:\s*","", regex=True, case=False)
 print(new_dataset.head(5))
 
 # # --- 2. VECTORIZATION (The Translator) ---
