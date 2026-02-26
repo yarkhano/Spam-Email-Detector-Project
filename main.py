@@ -32,8 +32,13 @@ new_dataset.rename(columns={"label": "category", "text": "message"}, inplace=Tru
 new_dataset["category"] = new_dataset["category"].map({"ham": 0, "spam": 1})
 
 
-#removing the irrelevant words symbols , that do not effect predictions of model
+#removing the irrelevant words symbols , that do not affect predictions of model
 new_dataset["message"] = new_dataset["message"].str.replace(r"^Subject:\s*","", regex=True, case=False)
+new_dataset["message"] = new_dataset["message"].str.replace(r"^(re|fw)\s*:\s*", "", regex=True, case=False)
+new_dataset["message"] = new_dataset["message"].str.replace(r"[^\w\s]", " ", regex=True)
+new_dataset["message"] = new_dataset["message"].str.lower()   #Force everything to lowercase, so our tfdfvectorizer understand e.g Free,free & Free same word and do not create multiple columns
+new_dataset["message"] = new_dataset["message"].str.replace(r"\s+", " ", regex=True).str.strip()
+
 print(new_dataset.head(5))
 
 # # --- 2. VECTORIZATION (The Translator) ---
