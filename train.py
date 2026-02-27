@@ -6,10 +6,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import SVC
 
-
 #Libraries for proper performance surance
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, precision_score, recall_score, f1_score
-
 
 # DATA LOADING & CLEANING , Data Preprocessing
 dataset = pd.read_csv('spam_mails_dataset.csv')
@@ -23,7 +21,6 @@ new_dataset.rename(columns={"label": "category", "text": "message"}, inplace=Tru
 # Map text labels to numbers (0 for ham, 1 for spam)
 new_dataset["category"] = new_dataset["category"].map({"ham": 0, "spam": 1})
 
-
 #removing the irrelevant words symbols , that do not affect predictions of model
 new_dataset["message"] = new_dataset["message"].str.replace(r"^Subject:\s*","", regex=True, case=False)
 new_dataset["message"] = new_dataset["message"].str.replace(r"^(re|fw)\s*:\s*", "", regex=True, case=False)
@@ -31,6 +28,7 @@ new_dataset["message"] = new_dataset["message"].str.replace(r"[^\w\s]", " ", reg
 new_dataset["message"] = new_dataset["message"].str.lower()   #Force everything to lowercase, so our tfdfvectorizer understand e.g Free,free & Free same word and do not create multiple columns
 new_dataset["message"] = new_dataset["message"].str.replace(r"\s+", " ", regex=True).str.strip()
 
+print("Data Head after cleaning:")
 print(new_dataset.head(5))
 
 #  VECTORIZATION (The Translator)
@@ -52,81 +50,38 @@ model.fit(X_train, y_train)
 # We must generate predictions (y_pred) to check the accuracy and create the confusion matrix
 y_pred = model.predict(X_test)
 
-
 accuracy = accuracy_score(y_test, y_pred)
 precision = precision_score(y_test, y_pred)
 recall = recall_score(y_test, y_pred)
 f1 = f1_score(y_test, y_pred)
 
 # Print the results in a clean, professional format
-print("--- MODEL PERFORMANCE METRICS ---")
+print("\n--- MODEL PERFORMANCE METRICS ---")
 print(f"Accuracy:  {accuracy * 100:.2f}%")
 print(f"Precision: {precision * 100:.2f}% (No False Alarms)")
 print(f"Recall:    {recall * 100:.2f}% (Catching all the Spam)")
 print(f"F1-Score:  {f1 * 100:.2f}% (Overall Balance)")
 
+# --- 6. VISUALIZATION (Confusion Matrix) ---
+cm = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
+plt.title("Spam Detection Confusion Matrix")
+plt.xlabel("Predicted Label")
+plt.ylabel("Actual Label")
+plt.show()
 
+# --- 7. SAVING THE ASSETS ---
+# Save the 'Brain' (SVM Model)
+model_filename = 'spam_mail_model.pkl'
+with open(model_filename, 'wb') as file:
+    pickle.dump(model, file)
+print(f"\nModel saved as {model_filename}")
 
-
-
-#
-# accuracy = accuracy_score(y_test, y_pred)
-# print(f"Model Accuracy: {accuracy * 100:.2f}%")
-#
-# # --- 6. VISUALIZATION (Confusion Matrix) ---
-# cm = confusion_matrix(y_test, y_pred)
-# plt.figure(figsize=(8, 6))
-# sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
-# plt.title("Spam Detection Confusion Matrix")
-# plt.xlabel("Predicted Label")
-# plt.ylabel("Actual Label")
-# plt.show()
-#
-# # --- 7. PREDICTION FUNCTION ---
-# def predict_email(text):
-#     # We use the 'tfidf' object we trained earlier to transform new input
-#     x_input = tfidf.transform([text])
-#     prediction = model.predict(x_input)
-#     return "🚨 SPAM" if prediction[0] == 1 else "✅ Safe (Ham)"
-#
-# # Quick Tests
-# print("Lunch Check:", predict_email("it is to inform you that tomorwo is off."))
-# print("Spam Check:", predict_email("Congratulations! You won a free iPhone. Click here to claim."))
-#
-# # --- 8. SAVING THE ASSETS ---
-# # Save the 'Brain' (SVM Model)
-# model_filename = 'spam_mail_model.pkl'
-# with open(model_filename, 'wb') as file:
-#     pickle.dump(model, file)
-# print(f"Model saved as {model_filename}")
-#
-# # Save the 'Translator' (TF-IDF Vectorizer)
-# # IMPORTANT: You cannot use the model later without this specific translator
-#
-# vectorizer_filename = 'spam_vectorizer.pkl'
-# with open(vectorizer_filename, 'wb') as file:
-#     pickle.dump(tfidf, file)
-# print(f"Vectorizer saved as {vectorizer_filename}")
-#
-#
-# #Load the model
-# with open(model_filename, 'rb') as file:
-#     loaded_model = pickle.load(file)
-#     print(f"model loaded as {model_filename}")
-#
-# with open(vectorizer_filename, 'rb') as file:
-#     loaded_vectorizer = pickle.load(file)
-#     print(f"vectorizer loaded as {vectorizer_filename}")
-#
-#
-# #verifying the loaded model is working correctly.
-# sample_message = "Information regarding submission of form"
-# transformed_message = loaded_vectorizer.transform([sample_message])
-# predicted_result = loaded_model.predict(transformed_message)
-# if predicted_result == 1:
-#     print("This email is spam.")
-# elif predicted_result == 0:
-#     print("This email is safe.")
-# print(f"message: {sample_message}")
-# print(f"prediction: {predicted_result}")
-#
+# Save the 'Translator' (TF-IDF Vectorizer)
+# IMPORTANT: You cannot use the model later without this specific translator
+vectorizer_filename = 'spam_vectorizer.pkl'
+with open(vectorizer_filename, 'wb') as file:
+    pickle.dump(tfidf, file)
+print(f"Vectorizer saved as {vectorizer_filename}")
+print("Training Pipeline Complete! 🎉")
